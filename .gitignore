@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.env/
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# Mypy / pytest cache
+.mypy_cache/
+.pytest_cache/
+
+# Mac/Win 系
+.DS_Store
+Thumbs.db
+
+notes/
