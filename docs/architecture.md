@@ -16,7 +16,7 @@ flask_trainer_budget/
 │   ├─ protein_types.py
 │   ├─ phase_types.py       ← PhaseSetting TypedDict
 │   ├─ phase_enum.py        ← Enum("bulk", "cut")
-│   └─ common_alias
+│   └─ common_alias.py
 ├─ services/
 │   ├─ meal_service.py
 │   ├─ protein_service.py
