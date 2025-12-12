@@ -1,3 +1,5 @@
+# Architecture
+
 flask_trainer_budget/
 ├─ app.py
 ├─ config/
