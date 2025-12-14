@@ -1,0 +1,20 @@
+[
+    {
+        "id": "whey_chocolate",
+        "name": "ホエイプロテイン（チョコ味）",
+
+        "total_weight_g": 1000.0,
+        "serving_size_g": 30.0,
+
+        "price": 3980
+    },
+    {
+        "id": "whey_plain",
+        "name": "ホエイプロテイン（プレーン）",
+
+        "total_weight_g": 2000.0,
+        "serving_size_g": 25.0,
+
+        "price": 6980
+    }
+]
