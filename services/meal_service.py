@@ -26,6 +26,7 @@ def calculate_meal_pdc(
         "kcal": total_kcal,
     }
 
+
 def calculate_meal_price(
     foods: list[FoodItem],
 ) -> Price:

@@ -1,4 +1,4 @@
-from typing import Typealias
+from typing import TypeAlias
 
 
 # --- 数値系 ---

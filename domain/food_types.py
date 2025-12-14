@@ -1,4 +1,4 @@
-from typing import TypeDict
+from typing import TypedDict
 
 from domain.common_alias import Gram, KCAL, Price, FoodID
 
