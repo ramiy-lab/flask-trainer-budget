@@ -1,0 +1,16 @@
+[
+    {
+        "phase": "bulk",
+
+        "protein_ratio": 0.30,
+        "fat_ratio": 0.20,
+        "carb_ratio": 0.50
+    },
+    {
+        "phase": "cut",
+
+        "protein_ratio": 0.40,
+        "fat_ratio": 0.30,
+        "carb_ratio": 0.30
+    }
+]
