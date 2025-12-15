@@ -1,5 +1,5 @@
 # Architecture
-
+```
 flask_trainer_budget/
 ├─ app.py
 ├─ config/
@@ -22,6 +22,12 @@ flask_trainer_budget/
 │   ├─ protein_service.py
 │   ├─ phase_service.py
 │   ├─ report_service.py
+│   ├─ validators/              ← ★ 新設（中身だけ分割）
+│   │   ├─ __init__.py           ← Facade
+│   │   ├─ _common.py            ← 共通ヘルパー
+│   │   ├─ food.py
+│   │   ├─ protein.py
+│   │   └─ phase.py
 │   └─ validators.py
 ├─ templates/
 │   ├─ base.html
@@ -38,7 +44,11 @@ flask_trainer_budget/
 ├─ tests/
 │   ├─ test_meal_service.py
 │   ├─ test_protein.py
-│   └─ test_phase.py
+│   ├─ test_phase.py
+│   ├─ test_food_validators.py
+│   ├─ test_protein_validators.py
+│   └─ test_phase_validators.py
 ├─ requirements.txt
 ├─ README.md
 └─ .env
+```
