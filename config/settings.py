@@ -45,7 +45,7 @@ def load_config() -> AppConfig:
     return AppConfig(
         env=env,
         foods_json_path=DATA_DIR / "foods.json",
-        proteins_json_path=DATA_DIR / "proteins.json",
+        protein_json_path=DATA_DIR / "protein.json",
         phase_json_path=DATA_DIR / "phase.json",
         debug=debug,
     )
