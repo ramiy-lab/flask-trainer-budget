@@ -21,3 +21,5 @@ venv/
 Thumbs.db
 
 notes/
+
+.coverage
