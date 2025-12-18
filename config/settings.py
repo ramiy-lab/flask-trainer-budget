@@ -15,7 +15,7 @@ DATA_DIR: Final[Path] = BASE_DIR / "data"
 load_dotenv()
 
 
-@dataclass(frozen=true)
+@dataclass(frozen=True)
 class AppConfig:
     """
     アプリケーション全体の設定をまとめる DTO
@@ -39,8 +39,8 @@ def load_config() -> AppConfig:
     """
     env: str = os.getenv("APP_ENV", "development")
 
-    debug_str: str = getenv("DEBUG", "false")
-    debug: bool = debug_str.lower() = "true"
+    debug_str: str = os.getenv("DEBUG", "false")
+    debug: bool = debug_str.lower() == "true"
 
     return AppConfig(
         env=env,

@@ -2,7 +2,7 @@ from domain.food_types import FoodItem
 from domain.common_alias import Gram, KCAL, Price
 
 
-def calculate_meal_pdc(
+def calculate_meal_pfc(
     foods: list[FoodItem],
 ) -> dict[str, Gram | KCAL]:
     """
