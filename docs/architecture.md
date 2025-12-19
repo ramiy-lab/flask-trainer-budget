@@ -43,8 +43,9 @@ flask_trainer_budget/
 │       └─ report.js
 ├─ tests/
 │   ├─ test_meal_service.py
-│   ├─ test_protein.py
-│   ├─ test_phase.py
+│   ├─ test_protein_service.py
+│   ├─ test_phase_service.py
+│   ├─ test_report_service.py
 │   ├─ test_food_validators.py
 │   ├─ test_protein_validators.py
 │   └─ test_phase_validators.py
