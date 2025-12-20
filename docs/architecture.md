@@ -47,6 +47,7 @@ flask_trainer_budget/
 │   ├─ test_phase_service.py
 │   ├─ test_report_service.py
 │   ├─ test_food_validators.py
+│   ├─ test_validators_common.py
 │   ├─ test_protein_validators.py
 │   └─ test_phase_validators.py
 ├─ requirements.txt
