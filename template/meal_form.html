@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Meal Form | Trainer Budget{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <h2 class="card-title">1食の食材を選ぶ</h2>
+
+    <form method="post" id="meal-form" class="form">
+      <div class="food-grid">
+        {% for food in foods %}
+          <label class="food-item">
+            <input
+              type="checkbox"
+              name="food_ids"
+              value="{{ food.id }}"
+              class="food-checkbox"
+              {% if food.id in selected_ids %}checked{% endif %}
+            />
+            <div class="food-name">{{ food.name }}</div>
+            <div class="food-meta">
+              P {{ "%.1f"|format(food.protein_g) }}g /
+              F {{ "%.1f"|format(food.fat_g) }}g /
+              C {{ "%.1f"|format(food.carb_g) }}g
+            </div>
+            <div class="food-meta">
+              {{ "%.0f"|format(food.kcal) }} kcal /
+              ¥{{ food.price }}
+            </div>
+          </label>
+        {% endfor %}
+      </div>
+
+      <div class="summary card-inner">
+        <h3 class="summary-title">リアルタイム合計 (JS)</h3>
+        <div class="summary-grid">
+          <div>Protein: <span id="sum-protein">0.0</span> g</div>
+          <div>Fat: <span id="sum-fat">0.0</span> g</div>
+          <div>Carb: <span id="sum-carb">0.0</span> g</div>
+          <div>Kcal: <span id="sum-kcal">0.0</span> kcal</div>
+          <div>Price: ¥<span id="sum-price">0</span></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn">サーバー計算で確定</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">確定結果 (サーバー計算) </h2>
+
+    {% if result is none %}
+      <p class="muted">まだ確定していません。食材を選んで「サーバー計算で確定」を押してね</p>
+    {% else %}
+      <ul class="result-list">
+        <li>Protein: {{ "%.1f"|format(result..protein_g) }} g</li>
+        <li>Fat: {{ "%.1f"|format(result.fat_g) }} g</li>
+        <li>Carb: {{ "%.1f"|format(result.carb_g) }} g</li>
+        <li>Kcal: {{ "%.1f"|format(result.kcal) }} kcal</li>
+        <li>Price:  ¥{{ result.price }}</li>
+      </ul>
+    {% endif %}
+  </section>
+
+  {# JS用のfoodsデータ (単一ソース) #}
+  <script id="foods-json" type="application/json">
+    {{ foods | tojson}}
+  </script>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename'js/meal.js') }}"></script>
+{% endblock %}
