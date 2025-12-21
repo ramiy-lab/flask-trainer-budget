@@ -53,7 +53,7 @@
       <p class="muted">まだ確定していません。食材を選んで「サーバー計算で確定」を押してね</p>
     {% else %}
       <ul class="result-list">
-        <li>Protein: {{ "%.1f"|format(result..protein_g) }} g</li>
+        <li>Protein: {{ "%.1f"|format(result.protein_g) }} g</li>
         <li>Fat: {{ "%.1f"|format(result.fat_g) }} g</li>
         <li>Carb: {{ "%.1f"|format(result.carb_g) }} g</li>
         <li>Kcal: {{ "%.1f"|format(result.kcal) }} kcal</li>
