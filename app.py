@@ -117,3 +117,6 @@ def meal_submit() -> Response:
         selected_ids=selected_ids,
         result=result,
     )
+
+if __name__ == "__main__":
+    app.run(debug=True)
