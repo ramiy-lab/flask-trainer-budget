@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Monthly Report{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2 class="card-title">月間レポート</h2>
+
+  <div class="report-summary">
+    <p>月間支出（推定）：¥{{ total_cost }}</p>
+    <ul>
+      <li>Protein 合計：{{ "%.1f"|format(macros.protein_g) }} g</li>
+      <li>Fat 合計：{{ "%.1f"|format(macros.fat_g) }} g</li>
+      <li>Carb 合計：{{ "%.1f"|format(macros.carb_g) }} g</li>
+    </ul>
+  </div>
+</section>
+
+<section class="card">
+  <h3 class="card-title">PFC 推移（サンプル）</h3>
+  <canvas id="pfcChart"></canvas>
+</section>
+
+<section class="card">
+  <h3 class="card-title">日別支出（サンプル）</h3>
+  <canvas id="costChart"></canvas>
+</section>
+
+<script id="report-data" type="application/json">
+  {{ daily_records | tojson }}
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+{% endblock %}

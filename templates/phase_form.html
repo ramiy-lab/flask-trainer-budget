@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Phase Select{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2 class="card-title">Phase 設定</h2>
+
+  <form method="post" action="{{ url_for('phase_recommend') }}">
+    <label>
+      総摂取カロリー：
+      <input type="number" name="total_kcal" required />
+    </label>
+
+    <label>
+      フェーズ：
+      <select name="phase">
+        <option value="bulk">Bulk</option>
+        <option value="cut">Cut</option>
+      </select>
+    </label>
+
+    <button type="submit">計算する</button>
+  </form>
+</section>
+{% endblock %}

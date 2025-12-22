@@ -8,6 +8,7 @@ from typing import Any, Final, Mapping, no_type_check
 from flask import Flask, render_template, request, Response
 
 from config.settings import AppConfig, load_config
+from domain.common_alias import Price, Gram
 from domain.food_types import FoodItem
 from domain.protein_types import ProteinItem
 from domain.phase_types import PhaseSetting
@@ -25,6 +26,11 @@ from services.validators import (
     validate_protein_items,
     validate_phase_settings,
 )
+from services.report_service import (
+    aggregate_daily_macros,
+    calculate_monthly_cost,
+)
+
 
 app: Final[Flask] = Flask(__name__)
 
@@ -207,6 +213,12 @@ def protein_cycle() -> Response:
     )
 
 
+@app.get("/phase")
+@no_type_check
+def phase_form() -> Response:
+    return render_template("phase_form.html")
+
+
 @app.post("/phase")
 @no_type_check
 def phase_recommend() -> Response:
@@ -224,6 +236,62 @@ def phase_recommend() -> Response:
         phase=phase_name,
         total_kcal=total_kcal,
         target=target,
+    )
+
+
+@app.get("/report")
+@no_type_check
+def monthly_report() -> Response:
+    """
+    月間レポート表示 (Sprint4)
+    ※ 今は固定のダミー日別データを使用
+    """
+    daily_records: list[dict[str, Gram | Price]] = [
+        {
+            "protein_g": 120.0,
+            "fat_g": 50.0,
+            "carb_g": 300.0,
+            "price": 900,
+        },
+        {
+            "protein_g": 140.0,
+            "fat_g": 55.0,
+            "carb_g": 280.0,
+            "price": 950,
+        },
+        {
+            "protein_g": 130.0,
+            "fat_g": 55.0,
+            "carb_g": 280.0,
+            "price": 950,
+        },
+    ]
+
+    macros = aggregate_daily_macros(
+        [
+            {
+                "protein_g": d["protein_g"],
+                "fat_g": d["fat_g"],
+                "carb_g": d["carb_g"],
+            }
+            for d in daily_records
+        ]
+    )
+
+    daily_costs: list[Price] = [int(d["price"]) for d in daily_records]
+    total_cost: Price = sum(daily_costs)
+    avg_daily_cost: Price = total_cost // len(daily_costs)
+
+    monthly_cost: Price = calculate_monthly_cost(
+        daily_cost=avg_daily_cost,
+        days=30,
+    )
+
+    return render_template(
+        "report.html",
+        daily_records=daily_records,
+        macros=macros,
+        total_cost=monthly_cost,
     )
 
 
