@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Protein cycle{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2 class="card-title">プロテイン残量管理</h2>
+
+  <div class="protein-grid">
+    {% for item in proteins %}
+      {% set protein = item.protein %}
+
+      <div class="protein-html">
+        <h3>{{ protein.name }}</h3>
+
+        <p>
+          総重量: {{ protein.total_weight_g }} g<br />
+          1回量: {{ protein.serving_size_g }} g<br />
+          価格:  ¥{{ protein.price }}
+        </p>
+
+        <p>
+          合計摂取回数目安: {{ item.total_servings }} 回
+        </p>
+
+        <label>
+          摂取回数:
+          <input
+            type="number"
+            min="0"
+            value="0"
+            class="serving-input"
+            data-total="{{ protein.total_weight_g }}"
+            data-serving="{{ protein.serving_size_g }}"
+          />
+        </label>
+
+        <p>
+          残量:
+          <span class="remaining">
+            {{ "%.1f"|format(item.remaining_weight_g) }}
+          </span>
+          g
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/protein.js')}}"></script>
+{% endblock %}

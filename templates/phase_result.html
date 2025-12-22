@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Phase Recommendation{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2 class="card-title">Phase: {{ phase }}</h2>
+
+  <p>総摂取カロリー：{{ total_kcal }} kcal</p>
+
+  <ul>
+    <li>Protein: {{ "%.1f"|format(target.protein_g) }} g</li>
+    <li>Fat: {{ "%.1f"|format(target.fat_g) }} g</li>
+    <li>Carb: {{ "%.1f"|format(target.carb_g) }} g</li>
+  </ul>
+</section>
+{% endblock %}

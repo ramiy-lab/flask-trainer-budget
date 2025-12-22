@@ -110,3 +110,14 @@
 .muted {
   color: #666;
 }
+
+.protein-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.protein-item.warning {
+  border-color: #ff6b6b;
+  background: #fff0f0;
+}
