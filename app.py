@@ -206,11 +206,6 @@ def protein_cycle() -> Response:
         proteins=view_proteins,
     )
 
-    return render_template(
-        "protein_cycle.html",
-        proteins=proteins,
-    )
-
 
 @app.post("/phase")
 @no_type_check
