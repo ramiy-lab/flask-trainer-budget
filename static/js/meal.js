@@ -28,22 +28,29 @@
     return ids;
   }
 
+  // ★ 量(g)を考慮した集計
   function sumSelected(foodMap, selectedIds) {
     let protein = 0.0;
     let fat = 0.0;
     let carb = 0.0;
     let kcal = 0.0;
-    let price = 0;
+    let price = 0.0;
 
     for (const id of selectedIds) {
       const food = foodMap.get(id);
       if (!food) continue;
 
-      protein += Number(food.protein_g);
-      fat += Number(food.fat_g);
-      carb += Number(food.carb_g);
-      kcal += Number(food.kcal);
-      price += Number(food.price);
+      const range = document.querySelector(
+        `.amount-range[data-food-id="${id}"]`
+      );
+      const grams = range ? Number(range.value) : 100;
+      const ratio = grams / 100.0;
+
+      protein += Number(food.protein_g) * ratio;
+      fat += Number(food.fat_g) * ratio;
+      carb += Number(food.carb_g) * ratio;
+      kcal += Number(food.kcal) * ratio;
+      price += Number(food.price) * ratio;
     }
 
     return { protein, fat, carb, kcal, price };
@@ -73,14 +80,30 @@
       renderSums(sums);
     }
 
+    // チェック切替
     document.addEventListener("change", (e) => {
       const target = e.target;
-      if (target && target.classList && target.classList.contains("food-checkbox")) {
+      if (target && target.classList.contains("food-checkbox")) {
         recalc();
       }
     });
 
-    // 初期表示（サーバー側でチェック済み状態から再計算）
+    // ★ g数変更（スライダー）
+    document.addEventListener("input", (e) => {
+      const target = e.target;
+      if (target.classList.contains("amount-range")) {
+        const valueSpan = target
+          .closest(".food-item")
+          .querySelector(".amount-value");
+
+        valueSpan.textContent = target.value;
+
+        // 量変更時も再計算
+        recalc();
+      }
+    });
+
+    // 初期表示
     recalc();
   }
 
