@@ -4,12 +4,12 @@ from services.meal_service import (
     calculate_meal_pfc,
     calculate_meal_price,
 )
-from domain.food_types import MealItem
-from domain.common_alias import Gram, KCAL, Price
+from domain.food_types import FoodItem, MealItem
+from domain.common_alias import Price
 
 
 @pytest.fixture
-def chicken() -> dict:
+def chicken() -> FoodItem:
     return {
         "id": "chicken",
         "name": "鶏むね肉",
@@ -22,7 +22,7 @@ def chicken() -> dict:
 
 
 @pytest.fixture
-def egg() -> dict:
+def egg() -> FoodItem:
     return {
         "id": "egg",
         "name": "全卵",
@@ -34,11 +34,11 @@ def egg() -> dict:
     }
 
 
-def test_calculate_meal_pfc_single_food_100g(chicken: dict) -> None:
+def test_calculate_meal_pfc_single_food_100g(chicken: FoodItem) -> None:
     items: list[MealItem] = [
         {
             "food": chicken,
-            "grams": 100,
+            "grams": 100.0,
         }
     ]
 
@@ -55,14 +55,14 @@ def test_calculate_meal_pfc_single_food_100g(chicken: dict) -> None:
 @pytest.mark.parametrize(
     "grams, expected_ratio",
     [
-        (50, 0.5),
-        (150, 1.5),
-        (200, 2.0),
+        (50.0, 0.5),
+        (150.0, 1.5),
+        (200.0, 2.0),
     ],
 )
 def test_calculate_meal_pfc_ratio(
-    chicken: dict,
-    grams: int,
+    chicken: FoodItem,
+    grams: float,
     expected_ratio: float,
 ) -> None:
     items: list[MealItem] = [
@@ -81,12 +81,12 @@ def test_calculate_meal_pfc_ratio(
 
 
 def test_calculate_meal_pfc_multiple_foods(
-    chicken: dict,
-    egg: dict,
+    chicken: FoodItem,
+    egg: FoodItem,
 ) -> None:
     items: list[MealItem] = [
-        {"food": chicken, "grams": 100},
-        {"food": egg, "grams": 50},
+        {"food": chicken, "grams": 100.0},
+        {"food": egg, "grams": 50.0},
     ]
 
     result = calculate_meal_pfc(items)
@@ -97,10 +97,10 @@ def test_calculate_meal_pfc_multiple_foods(
     assert result["kcal"] == pytest.approx(120.0 + 38.0)
 
 
-@pytest.mark.parametrize("grams", [0, -50])
+@pytest.mark.parametrize("grams", [0.0, -50.0])
 def test_calculate_meal_pfc_ignore_non_positive_grams(
-    chicken: dict,
-    grams: int,
+    chicken: FoodItem,
+    grams: float,
 ) -> None:
     items: list[MealItem] = [
         {"food": chicken, "grams": grams},
@@ -116,9 +116,9 @@ def test_calculate_meal_pfc_ignore_non_positive_grams(
     }
 
 
-def test_calculate_meal_price_single_food(chicken: dict) -> None:
+def test_calculate_meal_price_single_food(chicken: FoodItem) -> None:
     items: list[MealItem] = [
-        {"food": chicken, "grams": 100},
+        {"food": chicken, "grams": 100.0},
     ]
 
     price: Price = calculate_meal_price(items)
@@ -126,9 +126,9 @@ def test_calculate_meal_price_single_food(chicken: dict) -> None:
     assert price == 150
 
 
-def test_calculate_meal_price_ratio_and_truncation(chicken: dict) -> None:
+def test_calculate_meal_price_ratio_and_truncation(chicken: FoodItem) -> None:
     items: list[MealItem] = [
-        {"food": chicken, "grams": 150},  # 150 * 1.5 = 225
+        {"food": chicken, "grams": 150.0},  # 150 * 1.5 = 225
     ]
 
     price: Price = calculate_meal_price(items)
@@ -137,12 +137,12 @@ def test_calculate_meal_price_ratio_and_truncation(chicken: dict) -> None:
 
 
 def test_calculate_meal_price_multiple_foods(
-    chicken: dict,
-    egg: dict,
+    chicken: FoodItem,
+    egg: FoodItem,
 ) -> None:
     items: list[MealItem] = [
-        {"food": chicken, "grams": 100},  # 150
-        {"food": egg, "grams": 50},       # 15
+        {"food": chicken, "grams": 100.0},  # 150
+        {"food": egg, "grams": 50.0},       # 15
     ]
 
     price: Price = calculate_meal_price(items)
@@ -150,10 +150,10 @@ def test_calculate_meal_price_multiple_foods(
     assert price == 165
 
 
-@pytest.mark.parametrize("grams", [0, -100])
+@pytest.mark.parametrize("grams", [0.0, -100.0])
 def test_calculate_meal_price_ignore_non_positive_grams(
-    chicken: dict,
-    grams: int,
+    chicken: FoodItem,
+    grams: float,
 ) -> None:
     items: list[MealItem] = [
         {"food": chicken, "grams": grams},
