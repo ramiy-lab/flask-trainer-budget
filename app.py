@@ -9,6 +9,7 @@ from flask import Flask, render_template, request, Response
 
 from config.settings import AppConfig, load_config
 from domain.common_alias import Price, Gram
+from domain.food_category_types import FoodCategory
 from domain.food_types import FoodItem
 from services.meal_service import (
     calculate_meal_pfc,
@@ -44,9 +45,16 @@ def _parse_food_items(*, raw: Any) -> list[FoodItem]:
         if not isinstance(item, Mapping):
             raise ValueError("food item must be an object")
 
+        category_raw = item["category"]
+        if not isinstance(category_raw, str):
+            raise ValueError("category must be a string")
+
+        category: FoodCategory = category_raw  # type: ignore[assignment]
+
         food: FoodItem = {
             "id": str(item["id"]),
             "name": str(item["name"]),
+            "category": category,
             "protein_g": float(item["protein_g"]),
             "fat_g": float(item["fat_g"]),
             "carb_g": float(item["carb_g"]),

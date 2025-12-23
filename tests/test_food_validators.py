@@ -8,6 +8,7 @@ def test_validate_food_item_valid() -> None:
     food: FoodItem = {
         "id": "chicken_breast",
         "name": "鶏むね肉",
+        "category": "meat",
         "protein_g": 23.0,
         "fat_g": 1.5,
         "carb_g": 0.0,
@@ -22,6 +23,7 @@ def test_validate_food_item_negative_value() -> None:
     food: FoodItem = {
         "id": "invalid_food",
         "name": "invalid_food",
+        "category": "fruit",
         "protein_g": -10.0,
         "fat_g": 1.0,
         "carb_g": 0.0,

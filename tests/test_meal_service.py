@@ -13,6 +13,7 @@ def chicken() -> FoodItem:
     return {
         "id": "chicken",
         "name": "鶏むね肉",
+        "category": "meat",
         "protein_g": 23.0,
         "fat_g": 1.5,
         "carb_g": 0.0,
@@ -26,6 +27,7 @@ def egg() -> FoodItem:
     return {
         "id": "egg",
         "name": "全卵",
+        "category": "protein",
         "protein_g": 6.0,
         "fat_g": 5.0,
         "carb_g": 0.4,
@@ -142,7 +144,7 @@ def test_calculate_meal_price_multiple_foods(
 ) -> None:
     items: list[MealItem] = [
         {"food": chicken, "grams": 100.0},  # 150
-        {"food": egg, "grams": 50.0},       # 15
+        {"food": egg, "grams": 50.0},  # 15
     ]
 
     price: Price = calculate_meal_price(items)

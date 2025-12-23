@@ -1,11 +1,13 @@
 from typing import TypedDict
 
+from domain.food_category_types import FoodCategory
 from domain.common_alias import Gram, KCAL, Price, FoodID
 
 
 class FoodItem(TypedDict):
     id: FoodID
     name: str
+    category: FoodCategory
 
     protein_g: Gram
     fat_g: Gram
