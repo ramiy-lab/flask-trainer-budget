@@ -161,15 +161,30 @@ def meal_submit() -> Response:
     data: LoadedData = _load_food_data(config=config)
 
     selected_ids: list[str] = request.form.getlist("food_ids")
+
+    amounts: dict[str, float] = {
+        food_id: float(request.form.get(f"food_amounts[{food_id}]", 100))
+        for food_id in selected_ids
+    }
+
     selected_foods: list[FoodItem] = _get_selected_foods(
         data=data,
         selected_ids=selected_ids,
     )
 
-    macros = calculate_meal_pfc(selected_foods)
-    price = calculate_meal_price(selected_foods)
+    meal_items = [
+        {
+            "food": food,
+            "grams": amounts.get(food["id"], 100.0),
+        }
+        for food in selected_foods
+    ]
+
+    macros = calculate_meal_pfc(meal_items)
+    price = calculate_meal_price(meal_items)
 
     result = {
+        "items": meal_items,
         "protein_g": macros["protein_g"],
         "fat_g": macros["fat_g"],
         "carb_g": macros["carb_g"],
@@ -181,6 +196,7 @@ def meal_submit() -> Response:
         "meal_form.html",
         foods=data.foods,
         selected_ids=selected_ids,
+        amounts=amounts,
         result=result,
     )
 

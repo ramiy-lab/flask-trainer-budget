@@ -20,23 +20,16 @@
   }
 
   function getSelectedIds() {
-    const nodes = document.querySelectorAll("input.food-checkbox:checked");
-    const ids = [];
-    for (const node of nodes) {
-      ids.push(node.value);
-    }
-    return ids;
+    return Array.from(
+      document.querySelectorAll(".food-checkbox:checked"),
+      (el) => el.value
+    );
   }
 
-  // ★ 量(g)を考慮した集計
-  function sumSelected(foodMap, selectedIds) {
-    let protein = 0.0;
-    let fat = 0.0;
-    let carb = 0.0;
-    let kcal = 0.0;
-    let price = 0.0;
+  function sumSelected(foodMap, ids) {
+    let protein = 0, fat = 0, carb = 0, kcal = 0, price = 0;
 
-    for (const id of selectedIds) {
+    for (const id of ids) {
       const food = foodMap.get(id);
       if (!food) continue;
 
@@ -44,30 +37,48 @@
         `.amount-range[data-food-id="${id}"]`
       );
       const grams = range ? Number(range.value) : 100;
-      const ratio = grams / 100.0;
+      const ratio = grams / 100;
 
-      protein += Number(food.protein_g) * ratio;
-      fat += Number(food.fat_g) * ratio;
-      carb += Number(food.carb_g) * ratio;
-      kcal += Number(food.kcal) * ratio;
-      price += Number(food.price) * ratio;
+      protein += food.protein_g * ratio;
+      fat += food.fat_g * ratio;
+      carb += food.carb_g * ratio;
+      kcal += food.kcal * ratio;
+      price += food.price * ratio;
     }
 
     return { protein, fat, carb, kcal, price };
   }
 
-  function setText(id, value) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = value;
+  function renderSelected(foodMap, ids) {
+    const ul = document.getElementById("selected-items");
+    if (!ul) return;
+
+    ul.innerHTML = "";
+
+    if (ids.length === 0) {
+      ul.innerHTML = "<li class='muted'>未選択</li>";
+      return;
+    }
+
+    for (const id of ids) {
+      const food = foodMap.get(id);
+      const range = document.querySelector(
+        `.amount-range[data-food-id="${id}"]`
+      );
+      const grams = range ? range.value : 100;
+
+      const li = document.createElement("li");
+      li.textContent = `${food.name}：${grams} g`;
+      ul.appendChild(li);
+    }
   }
 
   function renderSums(sums) {
-    setText("sum-protein", sums.protein.toFixed(1));
-    setText("sum-fat", sums.fat.toFixed(1));
-    setText("sum-carb", sums.carb.toFixed(1));
-    setText("sum-kcal", sums.kcal.toFixed(1));
-    setText("sum-price", String(Math.trunc(sums.price)));
+    document.getElementById("sum-protein").textContent = sums.protein.toFixed(1);
+    document.getElementById("sum-fat").textContent = sums.fat.toFixed(1);
+    document.getElementById("sum-carb").textContent = sums.carb.toFixed(1);
+    document.getElementById("sum-kcal").textContent = sums.kcal.toFixed(1);
+    document.getElementById("sum-price").textContent = Math.trunc(sums.price);
   }
 
   function setup() {
@@ -78,38 +89,27 @@
       const ids = getSelectedIds();
       const sums = sumSelected(foodMap, ids);
       renderSums(sums);
+      renderSelected(foodMap, ids);
     }
 
-    // チェック切替
     document.addEventListener("change", (e) => {
-      const target = e.target;
-      if (target && target.classList.contains("food-checkbox")) {
-        recalc();
-      }
+      if (e.target.classList.contains("food-checkbox")) recalc();
     });
 
-    // ★ g数変更（スライダー）
     document.addEventListener("input", (e) => {
-      const target = e.target;
-      if (target.classList.contains("amount-range")) {
-        const valueSpan = target
-          .closest(".food-item")
-          .querySelector(".amount-value");
+      if (!e.target.classList.contains("amount-range")) return;
 
-        valueSpan.textContent = target.value;
+      const item = e.target.closest(".food-item");
+      item.querySelector(".amount-value").textContent = e.target.value;
+      item.querySelector(".amount-hidden").value = e.target.value;
 
-        // 量変更時も再計算
-        recalc();
-      }
+      recalc();
     });
 
-    // 初期表示
     recalc();
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setup);
-  } else {
-    setup();
-  }
+  document.readyState === "loading"
+    ? document.addEventListener("DOMContentLoaded", setup)
+    : setup();
 })();

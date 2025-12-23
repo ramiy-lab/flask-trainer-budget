@@ -31,5 +31,115 @@
 
         "kcal": 168.0,
         "price": 40
+    },
+    {
+        "id": "natto",
+        "name": "納豆",
+
+        "protein_g": 16.5,
+        "fat_g": 10.0,
+        "carb_g": 12.1,
+
+        "kcal": 200.0,
+        "price": 50
+    },
+    {
+        "id": "salmon",
+        "name": "サーモン（生）",
+
+        "protein_g": 20.4,
+        "fat_g": 13.4,
+        "carb_g": 0.1,
+
+        "kcal": 208.0,
+        "price": 250
+    },
+    {
+        "id": "tuna_lean",
+        "name": "マグロ（赤身）",
+
+        "protein_g": 26.4,
+        "fat_g": 1.4,
+        "carb_g": 0.1,
+
+        "kcal": 125.0,
+        "price": 280
+    },
+    {
+        "id": "soy_milk",
+        "name": "豆乳（無調整）",
+
+        "protein_g": 3.6,
+        "fat_g": 2.0,
+        "carb_g": 1.8,
+
+        "kcal": 46.0,
+        "price": 20
+    },
+    {
+        "id": "greek_yogurt",
+        "name": "ギリシャヨーグルト（無脂肪）",
+
+        "protein_g": 10.3,
+        "fat_g": 0.4,
+        "carb_g": 3.9,
+
+        "kcal": 59.0,
+        "price": 80
+    },
+    {
+        "id": "oats",
+        "name": "オートミール",
+
+        "protein_g": 13.7,
+        "fat_g": 5.9,
+        "carb_g": 66.3,
+
+        "kcal": 380.0,
+        "price": 60
+    },
+    {
+        "id": "broccoli",
+        "name": "ブロッコリー",
+
+        "protein_g": 4.3,
+        "fat_g": 0.5,
+        "carb_g": 5.2,
+
+        "kcal": 33.0,
+        "price": 40
+    },
+    {
+        "id": "avocado",
+        "name": "アボカド",
+
+        "protein_g": 2.0,
+        "fat_g": 15.3,
+        "carb_g": 9.0,
+
+        "kcal": 187.0,
+        "price": 120
+    },
+    {
+        "id": "sweet_potato",
+        "name": "さつまいも（焼き）",
+
+        "protein_g": 1.2,
+        "fat_g": 0.2,
+        "carb_g": 31.9,
+
+        "kcal": 151.0,
+        "price": 50
+    },
+    {
+        "id": "tofu_firm",
+        "name": "木綿豆腐",
+
+        "protein_g": 7.0,
+        "fat_g": 4.2,
+        "carb_g": 1.6,
+
+        "kcal": 72.0,
+        "price": 30
     }
 ]

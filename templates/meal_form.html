@@ -9,6 +9,7 @@
   <form method="post" id="meal-form" class="form">
     <div class="food-grid">
       {% for food in foods %}
+        {% set grams = amounts[food.id] if amounts and food.id in amounts else 100 %}
         <div class="food-item">
           <label class="food-select">
             <input
@@ -30,13 +31,11 @@
             </span>
           </div>
 
-
           <div class="food-meta">
             {{ "%.0f"|format(food.kcal) }} kcal /
             ¥{{ food.price }}
           </div>
 
-          <!-- 量選択（10g刻み） -->
           <div class="amount-control">
             <label>
               量：
@@ -45,19 +44,30 @@
                 min="0"
                 max="500"
                 step="10"
-                value="100"
+                value="{{ grams }}"
                 class="amount-range"
                 data-food-id="{{ food.id }}"
               />
-              <span class="amount-value">100</span> g
+              <span class="amount-value">{{ grams }}</span> g
             </label>
           </div>
+
+          <input
+            type="hidden"
+            name="food_amounts[{{ food.id }}]"
+            value="{{ grams }}"
+            class="amount-hidden"
+            data-food-id="{{ food.id }}"
+          />
         </div>
       {% endfor %}
     </div>
 
     <div class="summary card-inner">
-      <h3 class="summary-title">合計</h3>
+      <h3 class="summary-title">リアルタイム合計</h3>
+
+      <ul id="selected-items" class="selected-items"></ul>
+
       <div class="summary-grid">
         <div>Protein: <span id="sum-protein">0.0</span> g</div>
         <div>Fat: <span id="sum-fat">0.0</span> g</div>
@@ -67,18 +77,20 @@
       </div>
     </div>
 
-    <button type="submit" class="btn">PFC値と価格を確認</button>
+    <button type="submit" class="btn">PFC値と価格を確定</button>
   </form>
 </section>
 
 <section class="card">
-  <h2 class="card-title">確定結果 (サーバー計算)</h2>
+  <h2 class="card-title">確定結果（サーバー計算）</h2>
 
-  {% if result is none %}
-    <p class="muted">
-      まだ確定していません。食材を選んで「PFC値と価格を確認」を押してね
-    </p>
-  {% else %}
+  {% if result %}
+    <ul class="result-list">
+      {% for item in result["items"]%}
+        <li>{{ item.food.name }}：{{ item.grams }} g</li>
+      {% endfor %}
+    </ul>
+
     <ul class="result-list">
       <li>Protein: {{ "%.1f"|format(result.protein_g) }} g</li>
       <li>Fat: {{ "%.1f"|format(result.fat_g) }} g</li>
@@ -86,10 +98,11 @@
       <li>Kcal: {{ "%.1f"|format(result.kcal) }} kcal</li>
       <li>Price: ¥{{ result.price }}</li>
     </ul>
+  {% else %}
+    <p class="muted">まだ確定していません。</p>
   {% endif %}
 </section>
 
-{# JS用のfoodsデータ (単一ソース) #}
 <script id="foods-json" type="application/json">
   {{ foods | tojson }}
 </script>

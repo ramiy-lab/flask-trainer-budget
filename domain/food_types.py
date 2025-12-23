@@ -13,3 +13,14 @@ class FoodItem(TypedDict):
 
     kcal: KCAL
     price: Price
+
+
+class MealItem(TypedDict):
+    """
+    1食分の構成要素
+    food: 100gあたりの栄養情報を持つ FoodItem
+    grams: 実際に摂取する量(g)
+    """
+
+    food: FoodItem
+    grams: Gram
