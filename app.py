@@ -10,22 +10,11 @@ from flask import Flask, render_template, request, Response
 from config.settings import AppConfig, load_config
 from domain.common_alias import Price, Gram
 from domain.food_types import FoodItem
-from domain.protein_types import ProteinItem
-from domain.phase_types import PhaseSetting
 from services.meal_service import (
     calculate_meal_pfc,
     calculate_meal_price,
 )
-from services.protein_service import (
-    calculate_total_servings,
-    calculate_remaining_weight,
-)
-from services.phase_service import calculate_target_macros
-from services.validators import (
-    validate_food_items,
-    validate_protein_items,
-    validate_phase_settings,
-)
+from services.validators import validate_food_items
 from services.report_service import (
     aggregate_daily_macros,
     calculate_monthly_cost,
@@ -48,7 +37,7 @@ def _read_json_file(*, path: Path) -> Any:
 
 def _parse_food_items(*, raw: Any) -> list[FoodItem]:
     if not isinstance(raw, list):
-        raise ValueError("food.json must be a list")
+        raise ValueError("foods.json must be a list")
 
     foods: list[FoodItem] = []
     for item in raw:
@@ -75,57 +64,6 @@ def _load_food_data(*, config: AppConfig) -> LoadedData:
     foods = _parse_food_items(raw=foods_raw)
     food_by_id = {food["id"]: food for food in foods}
     return LoadedData(foods=foods, food_by_id=food_by_id)
-
-
-def _load_protein_items(*, config: AppConfig) -> list[ProteinItem]:
-    proteins_raw = _read_json_file(path=config.protein_json_path)
-
-    if not isinstance(proteins_raw, list):
-        raise ValueError("proteins.json must be a list")
-
-    proteins: list[ProteinItem] = []
-    for item in proteins_raw:
-        if not isinstance(item, Mapping):
-            raise ValueError("protein item must be an object")
-
-        protein: ProteinItem = {
-            "id": str(item["id"]),
-            "name": str(item["name"]),
-            "total_weight_g": float(item["total_weight_g"]),
-            "serving_size_g": float(item["serving_size_g"]),
-            "price": int(item["price"]),
-        }
-        proteins.append(protein)
-
-    validate_protein_items(proteins)
-    return proteins
-
-
-def _load_phase_settings(*, config: AppConfig) -> list[PhaseSetting]:
-    phases_raw = _read_json_file(path=config.phase_json_path)
-
-    if not isinstance(phases_raw, list):
-        raise ValueError("phase.json must be a list")
-
-    phases: list[PhaseSetting] = []
-    for item in phases_raw:
-        if not isinstance(item, Mapping):
-            raise ValueError("phase setting must be an object")
-
-        phase_name = item["phase"]
-        if phase_name not in ("bulk", "cut"):
-            raise ValueError("invalid phase")
-
-        phase_setting: PhaseSetting = {
-            "phase": phase_name,
-            "protein_ratio": float(item["protein_ratio"]),
-            "fat_ratio": float(item["fat_ratio"]),
-            "carb_ratio": float(item["carb_ratio"]),
-        }
-        phases.append(phase_setting)
-
-    validate_phase_settings(phases)
-    return phases
 
 
 def _get_selected_foods(
@@ -201,66 +139,12 @@ def meal_submit() -> Response:
     )
 
 
-@app.get("/protein")
-@no_type_check
-def protein_cycle() -> Response:
-    config: AppConfig = load_config()
-    proteins: list[ProteinItem] = _load_protein_items(config=config)
-
-    view_proteins: list[dict[str, object]] = []
-    for protein in proteins:
-        total_servings = calculate_total_servings(protein)
-        remaining_weight = calculate_remaining_weight(
-            protein=protein,
-            used_servings=0,
-        )
-
-        view_proteins.append(
-            {
-                "protein": protein,
-                "total_servings": total_servings,
-                "remaining_weight_g": remaining_weight,
-            }
-        )
-
-    return render_template(
-        "protein_cycle.html",
-        proteins=view_proteins,
-    )
-
-
-@app.get("/phase")
-@no_type_check
-def phase_form() -> Response:
-    return render_template("phase_form.html")
-
-
-@app.post("/phase")
-@no_type_check
-def phase_recommend() -> Response:
-    config: AppConfig = load_config()
-    phases: list[PhaseSetting] = _load_phase_settings(config=config)
-
-    total_kcal = float(request.form["total_kcal"])
-    phase_name = request.form["phase"]
-
-    phase = next(p for p in phases if p["phase"] == phase_name)
-    target = calculate_target_macros(total_kcal, phase)
-
-    return render_template(
-        "phase_result.html",
-        phase=phase_name,
-        total_kcal=total_kcal,
-        target=target,
-    )
-
-
 @app.get("/report")
 @no_type_check
 def monthly_report() -> Response:
     """
-    月間レポート表示 (Sprint4)
-    ※ 今は固定のダミー日別データを使用
+    月間レポート表示
+    ※ 現在はダミー日別データを使用
     """
     daily_records: list[dict[str, Gram | Price]] = [
         {
