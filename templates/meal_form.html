@@ -7,10 +7,23 @@
   <h2 class="card-title">1食の食材を選ぶ</h2>
 
   <form method="post" id="meal-form" class="form">
-    <div class="food-grid">
+
+    <!-- カテゴリ選択 -->
+    <div class="form-row">
+      <label for="category-select">カテゴリ</label>
+      <select id="category-select" class="category-select">
+        <option value="">カテゴリを選択</option>
+      </select>
+    </div>
+
+    <!-- 食材一覧 -->
+    <div class="food-grid" id="food-grid">
       {% for food in foods %}
         {% set grams = amounts[food.id] if amounts and food.id in amounts else 100 %}
-        <div class="food-item">
+        <div
+          class="food-item"
+          data-category="{{ food.category }}"
+        >
           <label class="food-select">
             <input
               type="checkbox"
@@ -63,6 +76,7 @@
       {% endfor %}
     </div>
 
+    <!-- リアルタイム集計 -->
     <div class="summary card-inner">
       <h3 class="summary-title">リアルタイム合計</h3>
 
@@ -86,7 +100,7 @@
 
   {% if result %}
     <ul class="result-list">
-      {% for item in result["items"]%}
+      {% for item in result["items"] %}
         <li>{{ item.food.name }}：{{ item.grams }} g</li>
       {% endfor %}
     </ul>
