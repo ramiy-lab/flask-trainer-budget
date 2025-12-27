@@ -230,3 +230,35 @@ canvas {
 .nutrients {
   white-space: nowrap;
 }
+
+/* =========================
+   form-row
+========================= */
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-row label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #d6e3d6; /* 少し明るめの文字 */
+}
+
+.form-row select {
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #2f4f3a;
+  background-color: #1f3327;
+  color: #e8f2ec;
+}
+
+.form-row select:focus {
+  outline: none;
+  border-color: #4caf75;
+  box-shadow: 0 0 0 2px rgba(76, 175, 117, 0.25);
+}

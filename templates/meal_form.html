@@ -41,10 +41,7 @@
     <div class="food-grid" id="food-grid">
       {% for food in foods %}
         {% set grams = amounts[food.id] if amounts and food.id in amounts else 100 %}
-        <div
-          class="food-item"
-          data-category="{{ food.category }}"
-        >
+        <div class="food-item" data-category="{{ food.category }}">
           <label class="food-select">
             <input
               type="checkbox"
@@ -99,7 +96,7 @@
 
     <!-- リアルタイム集計 -->
     <div class="summary card-inner">
-      <h3 class="summary-title">リアルタイム合計</h3>
+      <h3 class="summary-title">リアルタイム合計（目安）</h3>
 
       <ul id="selected-items" class="selected-items"></ul>
 
@@ -110,6 +107,10 @@
         <div>Kcal: <span id="sum-kcal">0.0</span> kcal</div>
         <div>Price: ¥<span id="sum-price">0</span></div>
       </div>
+
+      <p class="muted">
+        ※ この値は入力途中の目安です。最終判断は下の「確定結果」を参照してください。
+      </p>
     </div>
 
     <button type="submit" class="btn">PFC値と価格を確定</button>
@@ -120,19 +121,71 @@
   <h2 class="card-title">確定結果（サーバー計算）</h2>
 
   {% if result %}
+    <!-- 選択内容 -->
     <ul class="result-list">
       {% for item in result["items"] %}
         <li>{{ item.food.name }}：{{ item.grams }} g</li>
       {% endfor %}
     </ul>
 
+    <!-- 実測値 -->
     <ul class="result-list">
+      <li><strong>実測値</strong></li>
       <li>Protein: {{ "%.1f"|format(result.protein_g) }} g</li>
       <li>Fat: {{ "%.1f"|format(result.fat_g) }} g</li>
       <li>Carb: {{ "%.1f"|format(result.carb_g) }} g</li>
       <li>Kcal: {{ "%.1f"|format(result.kcal) }} kcal</li>
       <li>Price: ¥{{ result.price }}</li>
     </ul>
+
+    {% if result.recommendation %}
+      <!-- 推奨・評価 -->
+      <div class="card-inner">
+        <h3 class="summary-title">評価（推奨との比較）</h3>
+
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>推奨</th>
+              <th>差分</th>
+              <th>判定</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for key, label in {
+              "protein_g": "Protein",
+              "fat_g": "Fat",
+              "carb_g": "Carb"
+            }.items() %}
+              {% set status = result.recommendation.status[key] %}
+              <tr class="status-{{ status }}">
+                <td>{{ label }}</td>
+                <td>{{ "%.1f"|format(result.recommendation.target[key]) }} g</td>
+                <td>
+                  {% if result.recommendation.diff[key] >= 0 %}
+                    +{{ "%.1f"|format(result.recommendation.diff[key]) }}
+                  {% else %}
+                    {{ "%.1f"|format(result.recommendation.diff[key]) }}
+                  {% endif %}
+                  g
+                </td>
+                <td>
+                  {% if status == "ok" %}適正{% endif %}
+                  {% if status == "low" %}不足{% endif %}
+                  {% if status == "high" %}多め{% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <p class="muted">
+          ※ 推奨値は「フェーズ × 食事タイミングの目標カロリー」から算出されています。
+        </p>
+      </div>
+    {% endif %}
+
   {% else %}
     <p class="muted">まだ確定していません。</p>
   {% endif %}
