@@ -156,9 +156,7 @@ def meal_submit() -> Response:
     phase_enum = PhaseEnum(phase_name)
 
     phase_settings = _load_phase_settings(config=config)
-    phase_setting = next(
-        p for p in phase_settings if p["phase"] == phase_enum.value
-    )
+    phase_setting = next(p for p in phase_settings if p["phase"] == phase_enum.value)
 
     target_kcal = DEFAULT_KCAL_BY_TIMING[timing]
 
