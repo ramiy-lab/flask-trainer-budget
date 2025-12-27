@@ -8,6 +8,9 @@ from typing import Any, Final, Mapping, no_type_check
 from flask import Flask, render_template, request, Response
 
 from config.settings import AppConfig, load_config
+from config.constants import (
+    DEFAULT_KCAL_BY_TIMING,
+)
 from domain.common_alias import Price, Gram
 from domain.food_category_types import FoodCategory
 from domain.food_types import FoodItem
@@ -15,11 +18,13 @@ from services.meal_service import (
     calculate_meal_pfc,
     calculate_meal_price,
 )
+from domain.recommendation_types import RecommendationResult
 from services.validators import validate_food_items
 from services.report_service import (
     aggregate_daily_macros,
     calculate_monthly_cost,
 )
+from services.recommendation_service import build_recommendation
 
 
 app: Final[Flask] = Flask(__name__)
@@ -107,6 +112,8 @@ def meal_submit() -> Response:
     data: LoadedData = _load_food_data(config=config)
 
     selected_ids: list[str] = request.form.getlist("food_ids")
+    phase_name: str = request.form["phase"]
+    timing: str = request.form["timing"]
 
     amounts: dict[str, float] = {
         food_id: float(request.form.get(f"food_amounts[{food_id}]", 100))
@@ -129,6 +136,15 @@ def meal_submit() -> Response:
     macros = calculate_meal_pfc(meal_items)
     price = calculate_meal_price(meal_items)
 
+    target_kcal = DEFAULT_KCAL_BY_TIMING[timing]
+    recommendation: RecommendationResult = build_recommendation(
+        actual=macros,
+        target_kcal=target_kcal,
+        phase_setting=next(
+            p for p in load_config().phase_settings if p["phase"] == phase_name
+        ),
+    )
+
     result = {
         "items": meal_items,
         "protein_g": macros["protein_g"],
@@ -137,6 +153,7 @@ def meal_submit() -> Response:
         "kcal": macros["kcal"],
         "price": price,
     }
+    result["recommendation"] = recommendation
 
     return render_template(
         "meal_form.html",
