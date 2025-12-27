@@ -6,7 +6,12 @@
 <section class="card">
   <h2 class="card-title">1食の食材を選ぶ</h2>
 
-  <form method="post" id="meal-form" class="form">
+  <form
+    method="post"
+    id="meal-form"
+    class="form"
+    action="#result-anchor"
+  >
 
     <!-- 食事タイミング -->
     <div class="form-row">
@@ -117,6 +122,9 @@
   </form>
 </section>
 
+<!-- ★ アンカー -->
+<a id="result-anchor"></a>
+
 <section class="card">
   <h2 class="card-title">確定結果（サーバー計算）</h2>
 
@@ -185,7 +193,6 @@
         </p>
       </div>
     {% endif %}
-
   {% else %}
     <p class="muted">まだ確定していません。</p>
   {% endif %}

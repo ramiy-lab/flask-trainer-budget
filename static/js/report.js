@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  function getFoods() {
-    const el = document.getElementById("foods-json");
+  function readReportData() {
+    const el = document.getElementById("report-data");
     if (!el) return [];
     try {
       return JSON.parse(el.textContent || "[]");
@@ -11,65 +11,69 @@
     }
   }
 
-  function setupCategorySelect(foods) {
-    const select = document.getElementById("category-select");
-    if (!select) return;
+  function buildPfcChart(ctx, records) {
+    const labels = records.map((_, i) => `Day ${i + 1}`);
 
-    const categories = [...new Set(foods.map(f => f.category))];
+    const protein = records.map(r => r.protein_g);
+    const fat = records.map(r => r.fat_g);
+    const carb = records.map(r => r.carb_g);
 
-    for (const category of categories) {
-      const option = document.createElement("option");
-      option.value = category;
-      option.textContent = category;
-      select.appendChild(option);
-    }
-
-    select.addEventListener("change", () => {
-      filterFoodsByCategory(select.value);
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          { label: "Protein (g)", data: protein },
+          { label: "Fat (g)", data: fat },
+          { label: "Carb (g)", data: carb },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true },
+        },
+      },
     });
   }
 
-  function filterFoodsByCategory(category) {
-    const items = document.querySelectorAll(".food-item");
-    items.forEach(item => {
-      const itemCategory = item.getAttribute("data-category");
-      if (!category || itemCategory === category) {
-        item.style.display = "";
-      } else {
-        item.style.display = "none";
-      }
-    });
-  }
+  function buildCostChart(ctx, records) {
+    const labels = records.map((_, i) => `Day ${i + 1}`);
+    const costs = records.map(r => r.price);
 
-  function updateAmount(range) {
-    const foodId = range.dataset.foodId;
-    const value = range.value;
-
-    const valueSpan = range.closest(".amount-control")
-      ?.querySelector(".amount-value");
-    if (valueSpan) {
-      valueSpan.textContent = value;
-    }
-
-    const hidden = document.querySelector(
-      `.amount-hidden[data-food-id="${foodId}"]`
-    );
-    if (hidden) {
-      hidden.value = value;
-    }
-  }
-
-  function setupAmountControls() {
-    const ranges = document.querySelectorAll(".amount-range");
-    ranges.forEach(range => {
-      range.addEventListener("input", () => updateAmount(range));
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Daily Cost (¥)",
+            data: costs,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true },
+        },
+      },
     });
   }
 
   function setup() {
-    const foods = getFoods();
-    setupCategorySelect(foods);
-    setupAmountControls();
+    const records = readReportData();
+    if (records.length === 0) return;
+
+    const pfcCtx = document.getElementById("pfcChart");
+    const costCtx = document.getElementById("costChart");
+
+    if (pfcCtx) {
+      buildPfcChart(pfcCtx, records);
+    }
+    if (costCtx) {
+      buildCostChart(costCtx, records);
+    }
   }
 
   if (document.readyState === "loading") {

@@ -81,9 +81,47 @@
     document.getElementById("sum-price").textContent = Math.trunc(sums.price);
   }
 
+  // =========================
+  // カテゴリ機能 ここから
+  // =========================
+  function setupCategorySelect(foods) {
+    const select = document.getElementById("category-select");
+    if (!select) return;
+
+    const categories = Array.from(
+      new Set(foods.map((f) => f.category))
+    );
+
+    for (const category of categories) {
+      const option = document.createElement("option");
+      option.value = category;
+      option.textContent = category;
+      select.appendChild(option);
+    }
+
+    select.addEventListener("change", () => {
+      const selected = select.value;
+      const items = document.querySelectorAll(".food-item");
+
+      items.forEach((item) => {
+        const itemCategory = item.dataset.category;
+        if (!selected || itemCategory === selected) {
+          item.style.display = "";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    });
+  }
+  // =========================
+  // カテゴリ機能 ここまで
+  // =========================
+
   function setup() {
     const foods = readFoods();
     const foodMap = buildFoodMap(foods);
+
+    setupCategorySelect(foods);
 
     function recalc() {
       const ids = getSelectedIds();

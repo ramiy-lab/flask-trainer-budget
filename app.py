@@ -10,16 +10,22 @@ from flask import Flask, render_template, request, Response
 from config.settings import AppConfig, load_config
 from config.constants import (
     DEFAULT_KCAL_BY_TIMING,
+    MEAL_TIMING_LABELS,
 )
 from domain.common_alias import Price, Gram
 from domain.food_category_types import FoodCategory
 from domain.food_types import FoodItem
+from domain.phase_types import PhaseSetting
+from domain.phase_enum import PhaseEnum
 from services.meal_service import (
     calculate_meal_pfc,
     calculate_meal_price,
 )
 from domain.recommendation_types import RecommendationResult
-from services.validators import validate_food_items
+from services.validators import (
+    validate_food_items,
+    validate_phase_settings,
+)
 from services.report_service import (
     aggregate_daily_macros,
     calculate_monthly_cost,
@@ -79,6 +85,16 @@ def _load_food_data(*, config: AppConfig) -> LoadedData:
     return LoadedData(foods=foods, food_by_id=food_by_id)
 
 
+def _load_phase_settings(*, config: AppConfig) -> list[PhaseSetting]:
+    raw = _read_json_file(path=config.phase_json_path)
+
+    if not isinstance(raw, list):
+        raise ValueError("phase.json must be a list")
+
+    validate_phase_settings(raw)
+    return raw
+
+
 def _get_selected_foods(
     *,
     data: LoadedData,
@@ -102,6 +118,7 @@ def meal_form() -> Response:
         foods=data.foods,
         selected_ids=[],
         result=None,
+        MEAL_TIMING_LABELS=MEAL_TIMING_LABELS,
     )
 
 
@@ -136,13 +153,19 @@ def meal_submit() -> Response:
     macros = calculate_meal_pfc(meal_items)
     price = calculate_meal_price(meal_items)
 
+    phase_enum = PhaseEnum(phase_name)
+
+    phase_settings = _load_phase_settings(config=config)
+    phase_setting = next(
+        p for p in phase_settings if p["phase"] == phase_enum.value
+    )
+
     target_kcal = DEFAULT_KCAL_BY_TIMING[timing]
+
     recommendation: RecommendationResult = build_recommendation(
         actual=macros,
         target_kcal=target_kcal,
-        phase_setting=next(
-            p for p in load_config().phase_settings if p["phase"] == phase_name
-        ),
+        phase_setting=phase_setting,
     )
 
     result = {
@@ -152,15 +175,16 @@ def meal_submit() -> Response:
         "carb_g": macros["carb_g"],
         "kcal": macros["kcal"],
         "price": price,
+        "recommendation": recommendation,
     }
-    result["recommendation"] = recommendation
 
     return render_template(
         "meal_form.html",
         foods=data.foods,
-        selected_ids=selected_ids,
-        amounts=amounts,
+        selected_ids=[],
+        amounts={},
         result=result,
+        MEAL_TIMING_LABELS=MEAL_TIMING_LABELS,
     )
 
 
