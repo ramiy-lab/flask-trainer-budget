@@ -1,11 +1,12 @@
 from domain.phase_types import PhaseSetting
+from domain.recommendation_types import Macros
 from domain.common_alias import KCAL, Gram
 
 
 def calculate_target_macros(
     total_kcal: KCAL,
     phase: PhaseSetting,
-) -> dict[str, Gram]:
+) -> Macros:
     """
     Phase 設定と総 kcal から目標 P/F/C(g) を算出する
     """
@@ -21,4 +22,5 @@ def calculate_target_macros(
         "protein_g": protein_g,
         "fat_g": fat_g,
         "carb_g": carb_g,
+        "kcal": total_kcal,
     }
