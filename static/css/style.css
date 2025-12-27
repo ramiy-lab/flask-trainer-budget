@@ -3,23 +3,35 @@
 ========================= */
 
 :root {
-  --green-main: #2f7d57;
-  --green-soft: #eaf4ee;
-  --green-accent: #4fa47a;
-  --text-main: #222;
-  --text-sub: #555;
-  --border-soft: #e0e0e0;
+  /* 濃緑階調（暗 → 明） */
+  --green-darkest: #0f1f17;   /* header */
+  --green-darker:  #162c22;   /* card */
+  --green-dark:    #1f3d2f;   /* 境界・UI */
+  --green-soft:    #2e5a46;   /* card-title */
+  --green-accent:  #4fa47a;   /* 強調 */
+
+  --text-main: #e8f2ec;
+  --text-sub:  #b7c9bf;
+  --border-soft: #243b31;
 }
+
+/* =========================
+   Base
+========================= */
 
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
-  background: linear-gradient(to bottom, #f3faf6 0%, #e8f4ee 100%);
+  background: linear-gradient(
+    to bottom,
+    #0b1812 0%,
+    var(--green-darkest) 100%
+  );
   color: var(--text-main);
 }
 
 /* =========================
-   レイアウト
+   Layout
 ========================= */
 
 .container {
@@ -37,8 +49,12 @@ body {
 ========================= */
 
 .header {
-  background: linear-gradient(to bottom, #e6f3ec 0%, #dff0e7 100%);
-  border-bottom: 1px solid var(--border-soft);
+  background: linear-gradient(
+    to bottom,
+    #0b1812 0%,
+    var(--green-darkest) 100%
+  );
+  border-bottom: 1px solid var(--green-dark);
 }
 
 .header-inner {
@@ -54,12 +70,8 @@ body {
 }
 
 .brand a {
-  color: var(--green-main);
+  color: var(--text-main);
   text-decoration: none;
-}
-
-.brand a:hover {
-  text-decoration: underline;
 }
 
 .subtitle {
@@ -79,14 +91,12 @@ body {
   border-radius: 999px;
   text-decoration: none;
   font-weight: 600;
-  color: var(--green-main);
-  background: transparent;
-  transition: all 0.2s ease;
+  color: #cfe3d8;
+  transition: background 0.2s ease;
 }
 
 .nav a:hover {
-  background: var(--green-soft);
-  color: var(--green-main);
+  background: rgba(79, 164, 122, 0.15);
 }
 
 /* =========================
@@ -98,27 +108,25 @@ body {
   border-radius: 14px;
   padding: 18px;
   margin: 16px 0;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(
+    to bottom,
+    var(--green-darker) 0%,
+    #14271e 100%
+  );
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
 }
 
 .card-title {
   margin: 0 0 14px;
   font-size: 18px;
   font-weight: 700;
-  color: var(--green-main);
+  color: #a8d6c0;
   border-left: 4px solid var(--green-accent);
-  padding-left: 8px;
+  padding-left: 10px;
 }
 
 /* =========================
-   Button（統一）
+   Button
 ========================= */
 
 .btn,
@@ -126,24 +134,11 @@ button {
   padding: 10px 16px;
   border-radius: 12px;
   border: 1px solid var(--green-accent);
-  background: linear-gradient(to bottom, #5bbd8a, #3e9d6f);
+  background: linear-gradient(#5bbd8a, #3e9d6f);
   color: #fff;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-
-.btn:hover,
-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
-}
-
-.btn:active,
-button:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
 }
 
 /* =========================
@@ -154,86 +149,17 @@ input,
 select {
   padding: 8px 10px;
   border-radius: 10px;
-  border: 1px solid var(--border-soft);
-  font-size: 14px;
+  border: 1px solid var(--green-dark);
+  background-color: #0f1f17;
+  color: var(--text-main);
 }
 
 input:focus,
 select:focus {
   outline: none;
   border-color: var(--green-accent);
-  box-shadow: 0 0 0 2px rgba(79, 164, 122, 0.2);
+  box-shadow: 0 0 0 2px rgba(79, 164, 122, 0.3);
 }
-
-/* =========================
-   Grid（カード配置）
-========================= */
-
-.food-grid,
-.protein-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-@media (min-width: 780px) {
-  .food-grid,
-  .protein-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* =========================
-   Food / Protein Item
-========================= */
-
-.food-item,
-.protein-item {
-  border: 1px solid var(--border-soft);
-  border-radius: 12px;
-  padding: 14px;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.food-item:hover,
-.protein-item:hover {
-  background: var(--green-soft);
-  border-color: var(--green-accent);
-}
-
-.protein-item.warning {
-  border-color: #e57373;
-  background: #fff3f3;
-}
-
-/* =========================
-   Report
-========================= */
-
-.report-summary ul {
-  margin: 8px 0 0;
-  padding-left: 18px;
-}
-
-canvas {
-  max-width: 100%;
-  margin-top: 12px;
-}
-
-.unit-note {
-  font-size: 12px;
-  color: #777;
-  margin-right: 6px;
-}
-
-.nutrients {
-  white-space: nowrap;
-}
-
-/* =========================
-   form-row
-========================= */
 
 .form-row {
   display: flex;
@@ -245,20 +171,153 @@ canvas {
 .form-row label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #d6e3d6; /* 少し明るめの文字 */
+  color: #cfe3d8;
 }
 
-.form-row select {
-  padding: 8px 10px;
+/* =========================
+   Food Grid
+========================= */
+
+.food-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 780px) {
+  .food-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.food-item {
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 14px;
+  transition: background 0.15s ease;
+}
+
+.food-item:hover {
+  background: rgba(79, 164, 122, 0.12);
+}
+
+.unit-note {
+  font-size: 12px;
+  color: #9bb7ab;
+}
+
+.nutrients {
+  white-space: nowrap;
+}
+
+/* =========================
+   Result Summary Table
+========================= */
+
+.result-summary-table {
+  width: 65%;
+  max-width: 420px;
+  border-collapse: separate;
+  border-spacing: 0 6px;
+  margin-top: 8px;
+}
+
+/* 左列（項目名） */
+.result-summary-table th {
+  width: 55%;
+  text-align: left;
+  font-weight: 600;
+  color: #9bb7ab;
+  padding: 6px 8px 6px 20px; /* 左にしっかり余白 */
+  font-size: 0.9rem;
+}
+
+/* 右列（値） */
+.result-summary-table td {
+  width: 45%;
+  text-align: right;
+  padding: 6px 20px 6px 8px; /* 右にしっかり余白 */
   font-size: 0.95rem;
-  border-radius: 6px;
-  border: 1px solid #2f4f3a;
-  background-color: #1f3327;
-  color: #e8f2ec;
+  color: var(--text-main);
 }
 
-.form-row select:focus {
-  outline: none;
-  border-color: #4caf75;
-  box-shadow: 0 0 0 2px rgba(76, 175, 117, 0.25);
+.result-summary-table tr {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+.result-summary-table tr td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.result-summary-table tr th:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+/* =========================
+   Result Table（主役）
+========================= */
+
+.result-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 16px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ヘッダー */
+.result-table thead th {
+  padding: 14px 16px;              /* ←左右を body と完全一致 */
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  color: #9bb7ab;
+  border-bottom: 1px solid var(--border-soft);
+  text-align: left;
+}
+
+/* 本文 */
+.result-table tbody td {
+  padding: 16px 16px;              /* ←左右を header と完全一致 */
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 0.95rem;
+}
+
+.result-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.result-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* =========================
+   Status Badge
+========================= */
+
+.status-cell {
+  font-weight: 700;
+  text-align: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  display: inline-block;
+}
+
+.status-low {
+  color: #f2c1b6;
+  background: rgba(184, 92, 74, 0.25);
+}
+
+.status-ok {
+  color: #cfe0ec;
+  background: rgba(95, 134, 166, 0.25);
+}
+
+.status-high {
+  color: #f1e0b5;
+  background: rgba(210, 169, 77, 0.28);
 }

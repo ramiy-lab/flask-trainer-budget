@@ -49,27 +49,35 @@
     return { protein, fat, carb, kcal, price };
   }
 
+  // ★ リアルタイム用：選択中の食材テーブル描画（修正版）
   function renderSelected(foodMap, ids) {
-    const ul = document.getElementById("selected-items");
-    if (!ul) return;
+    const tbody = document.getElementById("realtime-items-body");
+    if (!tbody) return;
 
-    ul.innerHTML = "";
+    tbody.innerHTML = "";
 
     if (ids.length === 0) {
-      ul.innerHTML = "<li class='muted'>未選択</li>";
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<th class="muted">未選択</th><td></td>`;
+      tbody.appendChild(tr);
       return;
     }
 
     for (const id of ids) {
       const food = foodMap.get(id);
+      if (!food) continue;
+
       const range = document.querySelector(
         `.amount-range[data-food-id="${id}"]`
       );
       const grams = range ? range.value : 100;
 
-      const li = document.createElement("li");
-      li.textContent = `${food.name}：${grams} g`;
-      ul.appendChild(li);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <th>${food.name}</th>
+        <td class="muted">${grams} g</td>
+      `;
+      tbody.appendChild(tr);
     }
   }
 
@@ -82,15 +90,13 @@
   }
 
   // =========================
-  // カテゴリ機能 ここから
+  // カテゴリ機能
   // =========================
   function setupCategorySelect(foods) {
     const select = document.getElementById("category-select");
     if (!select) return;
 
-    const categories = Array.from(
-      new Set(foods.map((f) => f.category))
-    );
+    const categories = Array.from(new Set(foods.map((f) => f.category)));
 
     for (const category of categories) {
       const option = document.createElement("option");
@@ -105,17 +111,11 @@
 
       items.forEach((item) => {
         const itemCategory = item.dataset.category;
-        if (!selected || itemCategory === selected) {
-          item.style.display = "";
-        } else {
-          item.style.display = "none";
-        }
+        item.style.display =
+          !selected || itemCategory === selected ? "" : "none";
       });
     });
   }
-  // =========================
-  // カテゴリ機能 ここまで
-  // =========================
 
   function setup() {
     const foods = readFoods();
