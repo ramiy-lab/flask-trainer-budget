@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import json
+import argparse
+import logging
+from logging import Logger
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final, Mapping, no_type_check
@@ -107,9 +110,49 @@ def _get_selected_foods(
     ]
 
 
+def setup_logging(*, debug: bool) -> Logger:
+    """
+    logging設定
+    - console: INFO以上
+    - file: WARNING以上
+    """
+    log_level = logging.DEBUG if debug else logging.INFO
+
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    if logger.handlers:
+        return logger
+
+    formatter = logging.Formatter(
+        fmt="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(log_level)
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+
+    file_handler = logging.FileHandler(
+        filename=log_dir / "app.log",
+        encoding="utf-8",
+    )
+    file_handler.setLevel(logging.WARNING)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    return logger
+
+
 @app.get("/")
 @no_type_check
 def meal_form() -> Response:
+    app.logger.info("Accessed meal form")
+
     config: AppConfig = load_config()
     data: LoadedData = _load_food_data(config=config)
 
@@ -131,6 +174,13 @@ def meal_submit() -> Response:
     selected_ids: list[str] = request.form.getlist("food_ids")
     phase_name: str = request.form["phase"]
     timing: str = request.form["timing"]
+
+    app.logger.info(
+        "Meal submitted: phase=%s timing=%s foods=%d",
+        phase_name,
+        timing,
+        len(selected_ids),
+    )
 
     amounts: dict[str, float] = {
         food_id: float(request.form.get(f"food_amounts[{food_id}]", 100))
@@ -166,6 +216,11 @@ def meal_submit() -> Response:
         phase_setting=phase_setting,
     )
 
+    app.logger.info(
+        "Recommendation result: %s",
+        recommendation["status"],
+    )
+
     result = {
         "items": meal_items,
         "protein_g": macros["protein_g"],
@@ -193,6 +248,8 @@ def monthly_report() -> Response:
     月間レポート表示
     ※ 現在はダミー日別データを使用
     """
+    app.logger.info("Accessed monthly report")
+
     daily_records: list[dict[str, Gram | Price]] = [
         {
             "protein_g": 120.0,
@@ -242,5 +299,22 @@ def monthly_report() -> Response:
     )
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Trainer Budget App")
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug mode",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    args = parse_args()
+
+    setup_logging(debug=args.debug)
+
+    app.logger.info("Starting application")
+    app.logger.info("Debug mode: %s", args.debug)
+
+    app.run(debug=args.debug)
