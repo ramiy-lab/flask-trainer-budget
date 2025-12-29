@@ -27,7 +27,11 @@
   }
 
   function sumSelected(foodMap, ids) {
-    let protein = 0, fat = 0, carb = 0, kcal = 0, price = 0;
+    let protein = 0,
+      fat = 0,
+      carb = 0,
+      kcal = 0,
+      price = 0;
 
     for (const id of ids) {
       const food = foodMap.get(id);
@@ -49,7 +53,6 @@
     return { protein, fat, carb, kcal, price };
   }
 
-  // ★ リアルタイム用：選択中の食材テーブル描画（修正版）
   function renderSelected(foodMap, ids) {
     const tbody = document.getElementById("realtime-items-body");
     if (!tbody) return;
@@ -90,11 +93,13 @@
   }
 
   // =========================
-  // カテゴリ機能
+  // カテゴリ機能（修正版）
   // =========================
   function setupCategorySelect(foods) {
     const select = document.getElementById("category-select");
-    if (!select) return;
+    const grid = document.getElementById("food-grid");
+
+    if (!select || !grid) return;
 
     const categories = Array.from(new Set(foods.map((f) => f.category)));
 
@@ -105,14 +110,23 @@
       select.appendChild(option);
     }
 
+    // ★ 初期状態：カテゴリ未選択なので食材は非表示
+  grid.classList.remove("is-visible");
+
     select.addEventListener("change", () => {
       const selected = select.value;
       const items = document.querySelectorAll(".food-item");
 
+      if (!selected) {
+        grid.classList.remove("is-visible");
+        return;
+      }
+
+      grid.classList.add("is-visible");
+
       items.forEach((item) => {
-        const itemCategory = item.dataset.category;
         item.style.display =
-          !selected || itemCategory === selected ? "" : "none";
+          item.dataset.category === selected ? "" : "none";
       });
     });
   }

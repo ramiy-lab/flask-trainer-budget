@@ -179,9 +179,13 @@ select:focus {
 ========================= */
 
 .food-grid {
-  display: grid;
+  display: none;
   grid-template-columns: 1fr;
   gap: 12px;
+}
+
+.food-grid.is-visible {
+  display: grid;
 }
 
 @media (min-width: 780px) {
