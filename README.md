@@ -55,6 +55,8 @@ https://flask-trainer-budget.onrender.com
 - 実測値との差分を計算
 - low / ok / high の3段階で判定
 - 判定ロジックは meal_service から独立
+※ 現在の推奨PFCは「1日の目標カロリーを前提とした簡易モデル」に基づいており、
+　1食あたりの吸収量や個人差（体重・身長・活動量など）は考慮していません。
 
 
 ## 🔐 Validation & Error Handling
@@ -88,11 +90,14 @@ python app.py
 
 - 現在はログイン機能・ユーザー管理は未実装
 - 月間レポートはダミーデータ表示
+- 推奨PFCと差分表示は簡易的なロジックに基づくものであり、
+  厳密な栄養指導や個別最適化を目的としたものではありません
 - UI / UX は今後も改善予定
 
 
 ## 🚀 Future Improvements
 
 - ユーザー設定（体重・目標kcal）
+- 1日PFCと1食PFCを分離した推奨ロジック
 - 食事履歴の永続化
 - Django版への拡張
