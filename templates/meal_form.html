@@ -8,6 +8,7 @@
 
   <form method="post" id="meal-form" class="form" action="#result-anchor">
 
+    <!-- 食事タイミング -->
     <div class="form-row">
       <label for="timing-select">食事タイミング</label>
       <select id="timing-select" name="timing" required>
@@ -18,6 +19,7 @@
       </select>
     </div>
 
+    <!-- フェーズ -->
     <div class="form-row">
       <label for="phase-select">フェーズ</label>
       <select id="phase-select" name="phase" required>
@@ -27,6 +29,7 @@
       </select>
     </div>
 
+    <!-- カテゴリ選択 -->
     <div class="form-row">
       <label for="category-select">カテゴリ</label>
       <select id="category-select" class="category-select">
@@ -34,6 +37,7 @@
       </select>
     </div>
 
+    <!-- 食材一覧 -->
     <div class="food-grid" id="food-grid">
       {% for food in foods %}
         {% set grams = amounts[food.id] if amounts and food.id in amounts else 100 %}
@@ -89,8 +93,128 @@
       {% endfor %}
     </div>
 
+    <!-- リアルタイム集計 -->
+    <div class="summary card-inner">
+      <h3 class="summary-title">リアルタイム合計（目安）</h3>
+
+      <!-- リアルタイム：選択中の食材 -->
+      <div class="result-section">
+        <h4 class="summary-subtitle">選択中の食材</h4>
+        <table class="result-summary-table">
+          <tbody id="realtime-items-body">
+            <!-- JSで動的に挿入 -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- リアルタイム：PFC -->
+      <div class="result-section">
+        <h4 class="summary-subtitle">PFC合計</h4>
+        <table class="result-summary-table">
+          <tbody>
+            <tr><th>Protein</th><td><span id="sum-protein">0.0</span> g</td></tr>
+            <tr><th>Fat</th><td><span id="sum-fat">0.0</span> g</td></tr>
+            <tr><th>Carb</th><td><span id="sum-carb">0.0</span> g</td></tr>
+            <tr><th>Kcal</th><td><span id="sum-kcal">0.0</span> kcal</td></tr>
+            <tr><th>Price</th><td>¥<span id="sum-price">0</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="muted">
+        ※ この値は入力途中の目安です。最終判断は下の「確定結果」を参照してください。
+      </p>
+    </div>
+
     <button type="submit" class="btn">PFC値と価格を確定</button>
   </form>
+</section>
+
+<a id="result-anchor"></a>
+
+<section class="card">
+  <h2 class="card-title">確定結果（サーバー計算）</h2>
+
+  {% if result and result.recommendation %}
+
+    <!-- 確定：選択食材 -->
+    <div class="result-section">
+      <h3 class="summary-title">選択した食材</h3>
+      <table class="result-summary-table">
+        <tbody>
+          {% for item in result["items"] %}
+            <tr>
+              <th>{{ item.food.name }}</th>
+              <td class="muted">{{ item.grams }} g</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 確定：実測PFC -->
+    <div class="result-section">
+      <h3 class="summary-title">実測PFC</h3>
+      <table class="result-summary-table">
+        <tbody>
+          <tr><th>Protein</th><td>{{ "%.1f"|format(result.protein_g) }} g</td></tr>
+          <tr><th>Fat</th><td>{{ "%.1f"|format(result.fat_g) }} g</td></tr>
+          <tr><th>Carb</th><td>{{ "%.1f"|format(result.carb_g) }} g</td></tr>
+          <tr><th>Kcal</th><td>{{ "%.1f"|format(result.kcal) }} kcal</td></tr>
+          <tr><th>Price</th><td>¥{{ result.price }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 推奨との差分 -->
+    <div class="result-section">
+      <h3 class="summary-title">評価（推奨との比較）</h3>
+
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>推奨</th>
+            <th>差分</th>
+            <th>判定</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key, label in {
+            "protein_g": "Protein",
+            "fat_g": "Fat",
+            "carb_g": "Carb"
+          }.items() %}
+            {% set status = result.recommendation.status[key] %}
+            <tr>
+              <td>{{ label }}</td>
+              <td>{{ "%.1f"|format(result.recommendation.target[key]) }} g</td>
+              <td>
+                {% if result.recommendation.diff[key] >= 0 %}
+                  +{{ "%.1f"|format(result.recommendation.diff[key]) }}
+                {% else %}
+                  {{ "%.1f"|format(result.recommendation.diff[key]) }}
+                {% endif %}
+                g
+              </td>
+              <td class="status-cell status-{{ status }}">
+                {% if status == "ok" %}適正{% endif %}
+                {% if status == "low" %}不足{% endif %}
+                {% if status == "high" %}多め{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <p class="muted">
+        ※ 推奨値は「フェーズ × 食事タイミングの目標カロリー」から算出されています。
+      </p>
+    </div>
+
+  {% else %}
+    <p class="muted">まだ確定していません。</p>
+  {% endif %}
 </section>
 
 <script id="foods-json" type="application/json">
