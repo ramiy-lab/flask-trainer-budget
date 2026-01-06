@@ -38,7 +38,7 @@
     </div>
 
     <!-- 食材一覧 -->
-    <div class="food-grid" id="food-grid">
+    <div class="food-grid" id="food-grid" data-has-category="false">
       {% for food in foods %}
         {% set grams = amounts[food.id] if amounts and food.id in amounts else 100 %}
         <div class="food-item" data-category="{{ food.category }}">

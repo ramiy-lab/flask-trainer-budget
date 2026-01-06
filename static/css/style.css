@@ -184,6 +184,12 @@ select:focus {
   gap: 12px;
 }
 
+/* カテゴリ未選択時は食材を非表示 */
+.food-grid[data-has-category="false"] .food-item {
+  display: none;
+}
+
+
 @media (min-width: 780px) {
   .food-grid {
     grid-template-columns: 1fr 1fr;
