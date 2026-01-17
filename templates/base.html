@@ -3,7 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Trainer Budget{% endblock %}</title>
+    <title>Flask Trainer Budget</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
     {% block head %}{% endblock %}
   </head>
@@ -12,9 +17,8 @@
     <header class="header">
       <div class="container header-inner">
         <h1 class="brand">
-          <a href="{{ url_for('meal_form') }}">flask_trainer_budget</a>
+          <a href="{{ url_for('meal_form') }}">Flask Trainer Budget</a>
         </h1>
-        <p class="subtitle">Trainer Budget App</p>
 
         <nav class="nav">
           <a href="{{ url_for('meal_form') }}">Meal</a>

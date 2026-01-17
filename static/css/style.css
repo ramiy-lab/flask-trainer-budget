@@ -65,8 +65,10 @@ body {
 
 .brand {
   margin: 0;
+  font-family: "Cookie", cursive;
   font-size: 26px;
   font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .brand a {
